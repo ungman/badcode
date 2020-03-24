@@ -1,55 +1,67 @@
 package ru.liga.intership.badcode.service;
 
 
+import ru.liga.intership.badcode.domain.ConnectionToDB;
 import ru.liga.intership.badcode.domain.Person;
+import ru.liga.intership.badcode.domain.PersonDao;
+import ru.liga.intership.badcode.domain.PersonDaoDefault;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PersonService {
 
+    private final PersonDao personDao;
+    private final ConnectionToDB connectionToDB;
+    private Double bmi;
+    private List<Person> listPerson;
+
+    public PersonService() {
+        connectionToDB = ConnectionToDB.getInstance("jdbc:hsqldb:mem:test", "sa", "");
+        personDao = new PersonDaoDefault(connectionToDB);
+    }
+
+    public PersonService(String url, String user, String password) {
+        this.connectionToDB = ConnectionToDB.getInstance("jdbc:hsqldb:mem:test", "sa", "");
+        personDao = new PersonDaoDefault(connectionToDB);
+    }
+
+    public PersonDao getPersonDao() {
+        return personDao;
+    }
+
+    public ConnectionToDB getConnection() {
+        return connectionToDB;
+    }
 
     /**
      * Возвращает средний индекс массы тела всех лиц мужского пола старше 18 лет
      *
      * @return
      */
-    public void getAdultMaleUsersAverageBMI() {
-        double totalImt = 0.0;
-        long countOfPerson = 0;
-        try {
-
-            Connection conn = DriverManager.getConnection("jdbc:hsqldb:mem:test", "sa", "");
-            Statement statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM person WHERE sex = 'male' AND age > 18");
-            List<Person> adultPersons = new ArrayList<>();
-            while (rs.next()) {
-                Person p = new Person();
-                //Retrieve by column name
-                p.setId(rs.getLong("id"));
-                p.setSex(rs.getString("sex"));
-                p.setName(rs.getString("name"));
-                p.setAge(rs.getLong("age"));
-                p.setWeight(rs.getLong("weight"));
-                p.setHeight(rs.getLong("height"));
-                adultPersons.add(p);
-            }
-
-            for (Person p : adultPersons) {
-                double heightInMeters = p.getHeight() / 100d;
-                double imt = p.getWeight() / (Double) (heightInMeters * heightInMeters);
-                totalImt += imt;
-            }
-            countOfPerson = adultPersons.size();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("Average imt - " + totalImt / countOfPerson);
+    public Double getAdultMaleUsersAverageBMI() {
+        String query = "SELECT * FROM person WHERE sex = 'male' AND age > 18";
+        return getAverageBMI(query);
     }
 
+    public Double getAverageBMI(String query) {
+
+        if (!query.isEmpty()) {
+            this.getPersonDao().getPersonFromDBToList(connectionToDB.selectQuery(query));
+        }
+
+        listPerson = this.getPersonDao().getPersons();
+        double totalImt = 0.0;
+        long countOfPerson = 0;
+
+        for (Person p : listPerson) {
+            double heightInMeters = p.getHeight() / 100d;
+            double imt = p.getWeight() / (Double) (heightInMeters * heightInMeters);
+            totalImt += imt;
+        }
+
+        countOfPerson = listPerson.size();
+        bmi = totalImt / countOfPerson;
+        System.out.println("Average imt - " + bmi);
+        return bmi;
+    }
 }
