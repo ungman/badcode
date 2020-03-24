@@ -29,13 +29,13 @@ public class PersonDaoDefault extends PersonDao {
     }
 
     @Override
-    public String deletePerson(Person person) {
-        return " WHERE " + person.forQuery();
+    public String whereQuery(Person person) {
+        return " WHERE " + person.toQuery();
     }
 
     @Override
-    public String updatePerson(Person oldPerson, Person person) {
-        return " SET " + person.forQuery() + " WHERE " + oldPerson.forQuery();
+    public String setQuery(Person oldPerson, Person person) {
+        return " SET " + person.toQuery() + " WHERE " + oldPerson.toQuery();
     }
 
 

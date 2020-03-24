@@ -2,7 +2,7 @@ package ru.liga.intership.badcode.domain;
 
 import java.util.Map;
 
-public class Person {
+public class Person implements DataToQuery{
     private final Long id;
     private final String sex;
     private final String name;
@@ -47,7 +47,8 @@ public class Person {
         return height;
     }
 
-    public String forQuery() {
+    @Override
+    public String toQuery() {
         return "id=" + id + " sex=" + sex + " name=" + name + " age=" + age + " weight=" + weight + " height=" + height;
     }
 

@@ -21,7 +21,7 @@ public class PersonService {
     }
 
     public PersonService(String url, String user, String password) {
-        this.connectionToDB = ConnectionToDB.getInstance("jdbc:hsqldb:mem:test", "sa", "");
+        this.connectionToDB = ConnectionToDB.getInstance(url, user,password);
         personDao = new PersonDaoDefault(connectionToDB);
     }
 
