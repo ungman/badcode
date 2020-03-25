@@ -5,12 +5,12 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.liga.intership.badcode.domain.ConnectionToDB;
-import ru.liga.intership.badcode.domain.Person;
+
 import ru.liga.intership.badcode.domain.PersonDao;
 import ru.liga.intership.badcode.domain.PersonDaoDefault;
 
 import java.sql.ResultSet;
-import java.util.List;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
 
