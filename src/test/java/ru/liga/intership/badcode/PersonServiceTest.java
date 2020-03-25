@@ -72,4 +72,10 @@ public class PersonServiceTest {
         assertThat(averageBMI1).isNotEqualTo(averageBMI2);
     }
 
+
+    // Connection
+//    public static PersonService personService;
+
+
+
 }

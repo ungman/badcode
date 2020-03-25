@@ -23,7 +23,5 @@ public abstract class PersonDao {
         return personList.get(id);
     }
 
-    public abstract String whereQuery(Person person);
-    public abstract String setQuery(Person oldPerson, Person person);
 
 }

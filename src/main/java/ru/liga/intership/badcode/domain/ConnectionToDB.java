@@ -33,10 +33,11 @@ public class ConnectionToDB {
     }
 
     public ResultSet selectQuery(String query) {
-        ResultSet resultSet = null;
+        ResultSet resultSet ;
         try (Statement statement = connection.createStatement()) {
             resultSet = statement.executeQuery(query);
         } catch (SQLException e) {
+            resultSet=null;
             e.printStackTrace();
         }
         return resultSet;

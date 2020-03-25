@@ -16,6 +16,7 @@ public class PersonService {
     private List<Person> listPerson;
 
     public PersonService() {
+
         connectionToDB = ConnectionToDB.getInstance("jdbc:hsqldb:mem:test", "sa", "");
         personDao = new PersonDaoDefault(connectionToDB);
     }

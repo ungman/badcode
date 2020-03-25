@@ -28,15 +28,5 @@ public class PersonDaoDefault extends PersonDao {
         }
     }
 
-    @Override
-    public String whereQuery(Person person) {
-        return " WHERE " + person.toQuery();
-    }
-
-    @Override
-    public String setQuery(Person oldPerson, Person person) {
-        return " SET " + person.toQuery() + " WHERE " + oldPerson.toQuery();
-    }
-
 
 }
