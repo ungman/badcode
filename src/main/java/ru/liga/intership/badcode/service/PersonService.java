@@ -3,43 +3,35 @@ package ru.liga.intership.badcode.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.liga.intership.badcode.BadcodeApplication;
-import ru.liga.intership.badcode.domain.ConnectionToDB;
-import ru.liga.intership.badcode.domain.Person;
-import ru.liga.intership.badcode.domain.PersonDao;
-import ru.liga.intership.badcode.domain.PersonDaoDefault;
 
+import ru.liga.intership.badcode.dao.PersonDao;
+import ru.liga.intership.badcode.models.Person;
+import sun.dc.path.PathError;
+
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class PersonService {
     public static final Logger logger = LoggerFactory.getLogger(PersonService.class);
 
-    private final PersonDao personDao;
-    private final ConnectionToDB connectionToDB;
-    private Double bmi;
-    private List<Person> listPerson;
-
-    public PersonService() {
-        logger.debug("Enter to {} {}","PersonService","PersonService()");
-        connectionToDB = ConnectionToDB.getInstance("jdbc:hsqldb:mem:test", "sa", "");
-        personDao = new PersonDaoDefault(connectionToDB);
+    private final PersonDao personDao=new PersonDao();
+    public  Person findPersonById(int id){
+        return personDao.findById(id);
+    }
+    public void updatePerson(Person person){
+        personDao.update(person);
+    }
+    public void deletePerson(Person person){
+        personDao.delete(person);
+    }
+    public List<Person> findAllPerson() {
+        return personDao.findAll();
+    }
+    public List<Person> findByQueryPerson(String query) {
+        return personDao.executeQuery(query);
     }
 
-    public PersonService(String url, String user, String password) {
-        logger.debug("Enter to {} {}","PersonService","PersonService(String url, String user, String password)");
-        this.connectionToDB = ConnectionToDB.getInstance(url, user,password);
-        personDao = new PersonDaoDefault(connectionToDB);
-    }
-
-    public PersonDao getPersonDao() {
-        logger.debug("Enter to {} {}","PersonService","getPersonDao()");
-        return personDao;
-    }
-
-    public ConnectionToDB getConnection() {
-        logger.debug("Enter to {} {}","PersonService","getConnection()");
-        return connectionToDB;
-    }
 
     /**
      * Возвращает средний индекс массы тела всех лиц мужского пола старше 18 лет
@@ -48,17 +40,17 @@ public class PersonService {
      */
     public Double getAdultMaleUsersAverageBMI() {
         logger.debug("Enter to {} {}","PersonService","getAdultMaleUsersAverageBMI()");
-        String query = "SELECT * FROM person WHERE sex = 'male' AND age > 18";
+        String query = "FROM Person P WHERE P.sex = 'male' AND P.age > 18";
         return getAverageBMI(query);
     }
 
     public Double getAverageBMI(String query) {
-        logger.debug("Enter to {} {}","PersonService","getAverageBMI(String query)");
-        if (!query.isEmpty()) {
-            this.getPersonDao().getPersonFromDBToList(connectionToDB.selectQuery(query));
-        }
+        logger.debug("Enter to {} {}","PersonService","getAverageBMI(String query) ");
+        //session.createQuery("FROM Developer D WHERE D.id = 1")
 
-        listPerson = this.getPersonDao().getPersons();
+//        listPerson.addAll(findByQueryPerson(query));
+        List<Person> listPerson=findAllPerson();
+        System.out.println("listperson size"+listPerson.size());
         double totalImt = 0.0;
         long countOfPerson = 0;
 
@@ -67,7 +59,7 @@ public class PersonService {
             double imt = p.getWeight() / (Double) (heightInMeters * heightInMeters);
             totalImt += imt;
         }
-
+        Double bmi=0D;
         countOfPerson = listPerson.size();
         bmi = totalImt / countOfPerson;
         System.out.println("Average imt - " + bmi);
