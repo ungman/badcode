@@ -1,76 +1,56 @@
 package ru.liga.intership.badcode.service;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.liga.intership.badcode.BadcodeApplication;
-import ru.liga.intership.badcode.domain.ConnectionToDB;
-import ru.liga.intership.badcode.domain.Person;
-import ru.liga.intership.badcode.domain.PersonDao;
-import ru.liga.intership.badcode.domain.PersonDaoDefault;
+import ru.liga.intership.badcode.domain.dao.PersonDao;
+import ru.liga.intership.badcode.domain.model.Person;
+import ru.liga.intership.badcode.domain.utils.ConnectorFactory;
+import ru.liga.intership.badcode.domain.utils.ConnectorToDB;
+import ru.liga.intership.badcode.domain.utils.ConnectorToDBPerson;
 
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class PersonService {
+    private final PersonDao personDao;
+    private Predicate<Person> predicatePersonAdultAndMale;
     public static final Logger logger = LoggerFactory.getLogger(PersonService.class);
 
-    private final PersonDao personDao;
-    private final ConnectionToDB connectionToDB;
-    private Double bmi;
-    private List<Person> listPerson;
-
     public PersonService() {
-        logger.debug("Enter to {} {}","PersonService","PersonService()");
-        connectionToDB = ConnectionToDB.getInstance("jdbc:hsqldb:mem:test", "sa", "");
-        personDao = new PersonDaoDefault(connectionToDB);
+        logger.info("Enter to {} {}", this.getClass(), "PersonService()");
+        ConnectorToDB connectorToDB = new ConnectorToDBPerson("person", ConnectorFactory.getInstance().getConnection());
+        personDao = new PersonDao(connectorToDB);
     }
 
-    public PersonService(String url, String user, String password) {
-        logger.debug("Enter to {} {}","PersonService","PersonService(String url, String user, String password)");
-        this.connectionToDB = ConnectionToDB.getInstance(url, user,password);
-        personDao = new PersonDaoDefault(connectionToDB);
+    public void setPredicatePersonAdultAndMale(Predicate<Person> predicatePersonAdultAndMale) {
+        logger.debug("Enter to {} {}", this.getClass(), "void setPredicatePersonAdultAndMale(Predicate<Person> predicatePersonAdultAndMale)");
+        this.predicatePersonAdultAndMale = predicatePersonAdultAndMale;
     }
 
-    public PersonDao getPersonDao() {
-        logger.debug("Enter to {} {}","PersonService","getPersonDao()");
-        return personDao;
+    public Double getAverageBMIFromPredicate() {
+        logger.debug("Enter to {} {}", this.getClass(), "Double getAverageBMIFromPredicate()");
+        List<Person> personAdultAndMale = personDao.getAll().stream().filter(predicatePersonAdultAndMale).collect(Collectors.toList());
+        return getAverageBMI(personAdultAndMale);
     }
 
-    public ConnectionToDB getConnection() {
-        logger.debug("Enter to {} {}","PersonService","getConnection()");
-        return connectionToDB;
-    }
+    private Double getAverageBMI(List<Person> personsList) {
+        logger.debug("Enter to {} {}", this.getClass(), "Double getAverageBMI(List<Person> personsList)");
 
-    /**
-     * Возвращает средний индекс массы тела всех лиц мужского пола старше 18 лет
-     *
-     * @return
-     */
-    public Double getAdultMaleUsersAverageBMI() {
-        logger.debug("Enter to {} {}","PersonService","getAdultMaleUsersAverageBMI()");
-        String query = "SELECT * FROM person WHERE sex = 'male' AND age > 18";
-        return getAverageBMI(query);
-    }
-
-    public Double getAverageBMI(String query) {
-        logger.debug("Enter to {} {}","PersonService","getAverageBMI(String query)");
-        if (!query.isEmpty()) {
-            this.getPersonDao().getPersonFromDBToList(connectionToDB.selectQuery(query));
-        }
-
-        listPerson = this.getPersonDao().getPersons();
+        Double bmi = 0d;
         double totalImt = 0.0;
         long countOfPerson = 0;
 
-        for (Person p : listPerson) {
+        for (Person p : personsList) {
             double heightInMeters = p.getHeight() / 100d;
             double imt = p.getWeight() / (Double) (heightInMeters * heightInMeters);
             totalImt += imt;
         }
 
-        countOfPerson = listPerson.size();
+        countOfPerson = personsList.size();
         bmi = totalImt / countOfPerson;
         System.out.println("Average imt - " + bmi);
         return bmi;
     }
+
 }
