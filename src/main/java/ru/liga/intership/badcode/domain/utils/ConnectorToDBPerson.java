@@ -2,7 +2,6 @@ package ru.liga.intership.badcode.domain.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.liga.intership.badcode.domain.dao.CrudDao;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -56,7 +55,8 @@ public class ConnectorToDBPerson extends ConnectorToDB {
             executeUpdate = statement.executeUpdate(query1);
         } catch (SQLException e) {
             logger.trace(e.getStackTrace().toString());
-            throw new RuntimeException("Error in working DB");        }
+            throw new RuntimeException("Error in working DB");
+        }
         return executeUpdate;
     }
 

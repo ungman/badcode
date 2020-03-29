@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.liga.intership.badcode.domain.dao.PersonDao;
 
-public class Person implements Model{
+public class Person implements Model {
     public static final Logger logger = LoggerFactory.getLogger(PersonDao.class);
 
     private Long id;
@@ -14,7 +14,8 @@ public class Person implements Model{
     private Long weight;
     private Long height;
 
-    public Person() {logger.info("Enter to {} {}",this.getClass()," Person()");
+    public Person() {
+        logger.info("Enter to {} {}", this.getClass(), " Person()");
     }
 
     public Long getId() {
@@ -67,37 +68,37 @@ public class Person implements Model{
 
     @Override
     public String objectToWhereStatement() {
-        logger.debug("Enter to {} {}","String objectToWhereStatement()");
-        String query=
-                " WHERE id="+id+
-                ", sex="+sex+
-                ", name="+name+
-                ", age="+age+
-                ", weight="+weight+
-                ", height="+height;
+        logger.debug("Enter to {} {}", "String objectToWhereStatement()");
+        String query =
+                " WHERE id=" + id +
+                        ", sex=" + sex +
+                        ", name=" + name +
+                        ", age=" + age +
+                        ", weight=" + weight +
+                        ", height=" + height;
         return query;
     }
 
     @Override
     public String objectToSaveStatement() {
-        logger.debug("Enter to {} {}","String objectToSaveStatement()");
+        logger.debug("Enter to {} {}", "String objectToSaveStatement()");
 
-        String query=null;
-        if(id!=null){
-            query="(id,sex,name,age,weight,height)"+
-                    "VALUES ("+id+","+sex+","+name+","+age+","+weight+","+height+")";
-        }else{
-            query="(sex,name,age,weight,height)"+
-                    "VALUES ("+sex+","+name+","+age+","+weight+","+height+")";
+        String query = null;
+        if (id != null) {
+            query = "(id,sex,name,age,weight,height)" +
+                    "VALUES (" + id + "," + sex + "," + name + "," + age + "," + weight + "," + height + ")";
+        } else {
+            query = "(sex,name,age,weight,height)" +
+                    "VALUES (" + sex + "," + name + "," + age + "," + weight + "," + height + ")";
         }
-        return  query;
+        return query;
     }
 
     @Override
     public String objectToUpdateStatement(Object object) {
-        logger.debug("Enter to {} {}","String objectToUpdateStatement(Object object)");
-        String newValue=((Model) object).objectToWhereStatement().replaceAll("WHERE","");
-        String query=" SET "+newValue+objectToWhereStatement();
-        return  query;
+        logger.debug("Enter to {} {}", "String objectToUpdateStatement(Object object)");
+        String newValue = ((Model) object).objectToWhereStatement().replaceAll("WHERE", "");
+        String query = " SET " + newValue + objectToWhereStatement();
+        return query;
     }
 }

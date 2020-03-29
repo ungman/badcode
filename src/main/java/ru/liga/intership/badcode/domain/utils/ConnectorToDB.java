@@ -11,9 +11,9 @@ public abstract class ConnectorToDB {
     protected final Connection connection;
     public static final Logger logger = LoggerFactory.getLogger(ConnectorToDB.class);
 
-    protected ConnectorToDB(String nameTable,Connection connection) {
-        logger.info("Enter to {} {}",this.getClass(), "ConnectorToDB(String nameTable,Connection connection)");
-        this.connection=connection;
+    protected ConnectorToDB(String nameTable, Connection connection) {
+        logger.info("Enter to {} {}", this.getClass(), "ConnectorToDB(String nameTable,Connection connection)");
+        this.connection = connection;
         this.nameTable = nameTable;
     }
 

@@ -69,9 +69,9 @@ public abstract class CrudDao<T extends Model> {
 
     public void save(T object) {
         logger.debug("Enter to {} {}", this.getClass(), "T save(T object)");
-        if (object != null){
-            connectorToDB.saveByQuery(((Model) object).objectToSaveStatement(), null);
-        }else {
+        if (object != null) {
+            connectorToDB.saveByQuery(object.objectToSaveStatement(), null);
+        } else {
             logger.trace("Cannot save empty object");
             throw new RuntimeException("Cannot save empty object");
         }
@@ -79,8 +79,8 @@ public abstract class CrudDao<T extends Model> {
 
     public void update(T object, T objectNew) {
         logger.debug("Enter to {} {}", this.getClass(), "T  update(T object, T objectNew)");
-        if (object != null && objectNew!=null)
-            connectorToDB.updateByQuery(((Model) object).objectToUpdateStatement(objectNew), null);
+        if (object != null && objectNew != null)
+            connectorToDB.updateByQuery(object.objectToUpdateStatement(objectNew), null);
         else {
             logger.trace("Cannot update empty object");
             throw new RuntimeException("Cannot update empty object");
@@ -91,7 +91,7 @@ public abstract class CrudDao<T extends Model> {
     public void delete(T object) {
         logger.debug("Enter to {} {}", this.getClass(), "T  delete(T object)");
         if (object != null)
-            connectorToDB.deleteByQuery(((Model) object).objectToWhereStatement(), null);
+            connectorToDB.deleteByQuery(object.objectToWhereStatement(), null);
         else {
             logger.trace("Cannot delete empty object");
             throw new RuntimeException("Cannot delete empty object");
@@ -113,7 +113,7 @@ public abstract class CrudDao<T extends Model> {
             }
         } catch (SQLException e) {
             logger.trace(e.getStackTrace().toString());
-            throw new RuntimeException("Error on connect "+e.getMessage());
+            throw new RuntimeException("Error on connect " + e.getMessage());
         }
         return listT;
     }
@@ -123,10 +123,9 @@ public abstract class CrudDao<T extends Model> {
         T dto = null;
         ResultSet resultSet = null;
         try {
-            if (object instanceof ResultSet){
+            if (object instanceof ResultSet) {
                 resultSet = ((ResultSet) object);
-            }
-            else{
+            } else {
                 return null;
             }
             dto = persistentClass.getConstructor().newInstance();
@@ -147,7 +146,7 @@ public abstract class CrudDao<T extends Model> {
             }
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | SQLException ex) {
             logger.trace(ex.getStackTrace().toString());
-            throw new RuntimeException("Error  "+ex.getMessage());
+            throw new RuntimeException("Error  " + ex.getMessage());
         }
         return dto;
     }
